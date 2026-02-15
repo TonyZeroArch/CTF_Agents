@@ -4,6 +4,7 @@ My contributions:
 - Code contributions to the Tools section for now
 - Input on structure and architecture
 - Collaboration on security workflow concepts
+- Testing
 
 # CTF_Agents
 
