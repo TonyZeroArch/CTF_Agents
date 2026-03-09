@@ -10,7 +10,7 @@ from agents.specialists.web_exploitation.web_agent import WebExploitationAgent
 
 from typing import List
 
-def main(args: List[str]):
+def main(argv: List[str]) -> int:
     if len(argv) < 2:
         print("Usage: python main.py <challenge_json_path>")
         return 2

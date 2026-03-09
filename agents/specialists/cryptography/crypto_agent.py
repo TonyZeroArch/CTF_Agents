@@ -120,9 +120,7 @@ class CryptographyAgent(BaseAgent):
 
             # Fallback: shift 3 is common (classic Caesar)
             if chosen is None:
-                #chosen = next(((s, p) for s, p in candidates if s == 3), candidates[0])
                 chosen = next(((s, p) for s, p in candidates if s == 3), candidates[0])
-
 
             shift, plaintext = chosen
             steps.append(f"Chosen shift: {shift}")
