@@ -1,6 +1,4 @@
-# Chat Conversation
 
-Note: _This is purely the output of the chat conversation and does not contain any raw data, codebase snippets, etc. used to generate the output._
 
 ### User Input
 
@@ -8,7 +6,13 @@ Note: _This is purely the output of the chat conversation and does not contain a
 
 2. Mission Profile:
 
-Target: http://154.57.164.64:32057
+
+Scenario: We've obtained the source code for this malware, but it seems to be more complex than we thought.
+
+Tech assumptions: N/A
+
+
+Sandbox: N/A
 
 Goal: Discover and exfiltrate the flag (HTB{...}).
 
