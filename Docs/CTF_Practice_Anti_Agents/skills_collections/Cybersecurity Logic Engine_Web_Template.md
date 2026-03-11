@@ -12,7 +12,8 @@ Scenario: We've obtained the source code for this malware, but it seems to be mo
 Tech assumptions: N/A
 
 
-Sandbox: N/A
+**Sandbox: **
+> N/A
 
 Goal: Discover and exfiltrate the flag (HTB{...}).
 
