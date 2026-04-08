@@ -58,6 +58,7 @@ class CoordinatorAgent(BaseAgent):
             Structured analysis containing routing decision and metadata.
         """
         analysis = self.reasoner.analyze_challenge(challenge)
+        print(f"[ROUTER] target={analysis.recommended_target} action={analysis.recommended_action}")
 
         return {
             "challenge_id": challenge.get("id"),

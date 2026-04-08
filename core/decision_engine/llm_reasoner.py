@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass, asdict
 from typing import Any, Dict, List, Optional
 
@@ -73,9 +74,9 @@ class LLMReasoner:
     def _call_llm(self, prompt: str) -> str:
         try:
             response = self.client.responses.create(
-            model=self.model,
-            input=prompt,
-        )
+                model=self.model,
+                input=prompt,
+            )
             return response.output_text
         except Exception as e:
             print(f"[LLM ERROR] Falling back to heuristics: {e}")
@@ -126,23 +127,58 @@ History:
 {json.dumps(history, indent=2)}
 """.strip()
 
+    def _looks_like_base64(self, text: str) -> bool:
+        compact = re.sub(r"\s+", "", text)
+        if len(compact) < 8 or len(compact) % 4 != 0:
+            return False
+        return bool(re.fullmatch(r"[A-Za-z0-9+/=]+", compact))
+
+    def _looks_like_hex(self, text: str) -> bool:
+        compact = re.sub(r"\s+", "", text)
+        return (
+            len(compact) >= 8
+            and len(compact) % 2 == 0
+            and bool(re.fullmatch(r"[0-9a-fA-F]+", compact))
+        )
+
+    def _looks_like_textual_cipher(self, text: str) -> bool:
+        words = re.findall(r"[A-Za-z]+", text)
+        return len(words) >= 3 and sum(len(w) for w in words) >= 12
+
     def _heuristic_analysis(self, challenge: Dict[str, Any]) -> ChallengeAnalysis:
-        text = " ".join([
+        raw_text = " ".join([
             challenge.get("name", ""),
             challenge.get("description", ""),
             " ".join(challenge.get("hints", [])),
             " ".join(challenge.get("tags", [])),
             json.dumps(challenge.get("metadata", {})),
-        ]).lower()
+        ])
 
+        text = raw_text.lower()
         indicators: List[str] = []
 
-        if any(word in text for word in ["cipher", "decrypt", "base64", "hex", "xor", "caesar"]):
-            indicators.append("crypto_terms")
+        has_crypto_keywords = any(
+            word in text
+            for word in ["cipher", "decrypt", "base64", "hex", "xor", "caesar", "rot", "encode", "decode"]
+        )
+        looks_base64 = self._looks_like_base64(raw_text)
+        looks_hex = self._looks_like_hex(raw_text)
+        looks_textual_cipher = self._looks_like_textual_cipher(raw_text)
+
+        if has_crypto_keywords or looks_base64 or looks_hex:
+            if has_crypto_keywords:
+                indicators.append("crypto_terms")
+            if looks_base64:
+                indicators.append("base64_pattern")
+            if looks_hex:
+                indicators.append("hex_pattern")
+            if looks_textual_cipher:
+                indicators.append("textual_cipher_pattern")
+
             return ChallengeAnalysis(
                 category_guess="crypto",
                 confidence=0.93,
-                reasoning="Detected crypto-related terms.",
+                reasoning="Detected crypto-related terms or encoded/cipher-like patterns.",
                 recommended_target="crypto_agent",
                 recommended_action="run_agent",
                 detected_indicators=indicators,
