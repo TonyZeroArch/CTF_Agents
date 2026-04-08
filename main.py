@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 from typing import List
 
-
 from agents.coordinator.coordinator_agent import CoordinatorAgent
 from agents.specialists.cryptography.crypto_agent import CryptographyAgent
 from agents.specialists.web_exploitation.web_agent import WebExploitationAgent
@@ -22,8 +21,10 @@ def main(argv: List[str]) -> int:
     challenge = json.loads(challenge_path.read_text())
 
     coordinator = CoordinatorAgent()
-    coordinator.register_agent(CryptographyAgent(agent_id="crypto"))
-    coordinator.register_agent(WebExploitationAgent(agent_id="web"))
+
+    # Register agents with IDs that match the reasoner/coordinator routing targets
+    coordinator.register_agent(CryptographyAgent())  # agent_id defaults to "crypto_agent"
+    coordinator.register_agent(WebExploitationAgent(agent_id="web_agent"))
 
     result = coordinator.solve_challenge(challenge)
     print(json.dumps(result, indent=2))
